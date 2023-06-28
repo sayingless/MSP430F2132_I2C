@@ -23,9 +23,9 @@ void I2CStartSend(char slaveAddress) {
 }
 
 void I2CWrite(char command) {
-  while ((IFG2 & UCB0TXIFG) != B0TXPending);
+  while ((IFG2 & UCB0TXIFG) != 0x08);
   UCB0TXBUF = command;
-  while ((IFG2 & UCB0TXIFG) != B0TXPending);
+  while ((IFG2 & UCB0TXIFG) != 0x08);
   UCB0CTL1 |= UCTXSTP;
   while (UCB0CTL1 & UCTXSTP);
 }
@@ -37,8 +37,8 @@ char I2CRead(char slaveAddress) {
   while (UCB0CTL1 & UCTXSTT);  // Wait for start condition is sent
   UCB0CTL1 |= UCTXSTP;  // Send stop condition
   while (UCB0CTL1 & UCTXSTP); // Make sure stop condition is sent
-  while((IFG2 & UCB0RXIFG) != B0RXPending);  // Wait until data can be read
-  char readValue = B0_RECEIVE_BUFFER;  // Read data
+  while((IFG2 & UCB0RXIFG) != 0x04);  // Wait until data can be read
+  char readValue = UCB0RXBUF;  // Read data
   return readValue;
 }
 
